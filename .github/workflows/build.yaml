@@ -12,7 +12,7 @@ jobs:
     # These are for the GitHub Container registry, you can also use
     # Quay.io or another OCI registry
     env:
-      registry: docker.pkg.github.com
+      registry: ghcr.io
       username: autamus
       repository: container-builder-template     
 
