@@ -10,9 +10,9 @@ on:
       - main
       - master
   # Let's also trigger a build and publish of your container when 
-  # you release a new version.
+  # you release a new version. You can use "created" here instead of published.
   release:
-    types: [published, created]
+    types: [published]
 
 jobs:
   deploy-images:
