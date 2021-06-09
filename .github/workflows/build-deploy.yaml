@@ -24,7 +24,7 @@ jobs:
     env:
       registry: ghcr.io
       username: autamus
-      repository: container-builder-template     
+      repository: ~builder-template     
 
     strategy:
       # Even if one docker container build fails we want the others to continue.
@@ -76,4 +76,6 @@ jobs:
       - name: Deploy ${{ matrix.dockerfile[1] }}
         # And Don't log push the container on a pull request.
         if: github.event_name != 'pull_request'
-        run: docker push --all-tags
+        run: |
+          name=${{ env.container }}
+          docker push ${name%%:*} --all-tags
