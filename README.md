@@ -1,9 +1,9 @@
+<img src="https://avatars.githubusercontent.com/u/73002963" width="300" height="300">
+
 # Container Builder Template
 
 This template will show you how to enable automated builds for your
 repository Dockerfiles to the [GitHub container registry](https://github.blog/2020-09-01-introducing-github-container-registry/), ghcr.io.
-
-![https://avatars.githubusercontent.com/u/73002963](https://avatars.githubusercontent.com/u/73002963)
 
 **under development**
 
