@@ -1,11 +1,18 @@
-name: Deploy Docker Containers
+name: Build & Deploy Docker Containers
 on:
-
-  # This is when you want to deploy your container.
+  # We'll trigger this workflow when a PR is submitted to make sure
+  # your application still builds successfully with the new commits.
+  pull_request: []
+  # We'll also trigger this workflow when you want to deploy your container.
   # This means any push to main. You might want to do a release trigger.
   push:
     branches:
       - main
+      - master
+  # Let's also trigger a build and publish of your container when 
+  # you release a new version.
+  release:
+    types: [published, created]
 
 jobs:
   deploy-images:
@@ -20,7 +27,8 @@ jobs:
       repository: container-builder-template     
 
     strategy:
-
+      # Even if one docker container build fails we want the others to continue.
+      fail-fast: false
       # A matrix of Dockerfile paths and associated tags
       # Dockerfile in root builds to tag latest
       matrix:
@@ -28,19 +36,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build ${{ matrix.dockerfile[1] }}
+
+      - name: Set Container Tag Normal
         run: |
           container="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${{ matrix.dockerfile[1]}}"
-          printf "Preparing to build ${container} from ${{ matrix.dockerfile[0] }}"
+          echo "container=${container}" >> $GITHUB_ENV
+
+        # On a new release create a container with the same tag as the release.
+      - name: Set Container Tag Release
+        if: github.event_name == 'release'
+        run: |
+          container="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1]}}"
+          echo "container=${container}" >> $GITHUB_ENV
+
+      - name: Build ${{ matrix.dockerfile[1] }}
+        run: |
+          printf "Preparing to build ${{ env.container }} from ${{ matrix.dockerfile[0] }}"
           if [ ! -f "${{ matrix.dockerfile[0]}}" ]; then
               printf "Dockerfile ${{ matrix.dockerfile[0]}} does not exist"
               exit 1;
           fi
-          docker build -f ${{ matrix.dockerfile[0] }} -t ${container} .
+          docker build -f ${{ matrix.dockerfile[0] }} -t ${{ env.container }} .
           docker images
-          echo "container=${container}" >> $GITHUB_ENV
 
-      - name: Log in to GitHub Docker Registry
+      - name: Log in to GitHub Container Registry
+        # Don't log into registry on pull request.
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ${{ env.registry }}
@@ -52,4 +73,6 @@ jobs:
           # password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Deploy ${{ matrix.dockerfile[1] }}
+        # And Don't log push the container on a pull request.
+        if: github.event_name != 'pull_request'
         run: docker push ${{ env.container }}
