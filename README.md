@@ -5,12 +5,12 @@
 This template will show you how to set up automated builds for the
 Dockerfiles in your repository and deploy them to any container registry.
 
-**under development**
 
 ## Usage
 
-You can either [use this repository as a template](https://github.com/autamus/container-builder-template/template) 
-or copy the contents of [.github/workflows](.github/workflows) into your current repository.
+You can either [use this repository as a template](https://github.com/autamus/container-builder-template/generate) 
+or copy the [.github/workflows/build-deploy.yaml](.github/workflows/build-deploy.yaml) file 
+into your current repository.
 
 ### 1. Registry
 
@@ -28,7 +28,7 @@ env:
 ```
 
 Later in the workflow we need to authenticate using the same registry name,
-and credentials, usually from the environment:
+and credentials, usually from your CI environment:
 
 ```yaml
 - name: Log in to GitHub Docker Registry
@@ -51,9 +51,9 @@ with:
     password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
-The environment section will need to be changed in `build.yaml` and `deploy.yaml`,
-while the login section is only present in `deploy.yaml`.
-
+The yaml recipe is documented with comments, and please 
+[open an issue](https://github.com/autamus/container-builder-template/issues) if
+you have any questions.
 
 ### 2. Dockerfiles
 
@@ -77,35 +77,44 @@ The above will build the following containers.
  - ghcr.io/autamus/container-builder-template:latest from Dockerfile
  - ghcr.io/autamus/container-builder-template:subfolder from subfolder/Dockerfile
 
+When you create a release (e.g., 1.0.0), the following containers will also be built.
+
+ - ghcr.io/autamus/container-builder-template:1.0.0-latest from Dockerfile
+ - ghcr.io/autamus/container-builder-template:1.0.0-subfolder from subfolder/Dockerfile
+
+As another example, if you normally have two containers one with the tag `latest` and one 
+with the tag `alpine`. This workflow step will mark them as `v0.2.1-latest` and `v0.2.1-alpine`
+respectively when you create a new release with the tag with the value `v0.2.1`.
 
 ### 4. Triggers
 
-By default, adding these files will build containers on a pull request (to test
+By default, adding this workflow file will build containers on a pull request (to test
 changes) and then deploy on any merge into the main branch. You can take a look
 at [GitHub triggers](https://docs.github.com/en/actions/reference/events-that-trigger-workflows) if 
 you want to choose a different event (e.g., a release).
 
 #### Building on a GitHub Release
 
-The build-deploy template also supports building containers on a new GitHub release with the trigger below.
+As stated above, the build-deploy template supports building containers on a new GitHub release with the trigger below.
 If you decide that you'd rather not release versioned containers on a release you can delete or comment out this section.
+
 ```yaml
   # Let's also trigger a build and publish of your container when 
   # you release a new version.
   release:
     types: [published, created]
 ```
-When we're building containers on GitHub releases, we'll need a way to distinguish them.
-The following code segment will create special tags for your docker containers to match your GitHub release.
+
+You'll also want to comment out the section that generates these different tags, shown below.
+
 ```yaml
-        # On a new release create a container with the same tag as the release.
-      - name: Set Container Tag Release
-        if: github.event_name == 'release'
-        run: |
-          container="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1]}}"
-          echo "container=${container}" >> $GITHUB_ENV
+# On a new release create a container with the same tag as the release.
+- name: Set Container Tag Release
+  if: github.event_name == 'release'
+  run: |
+    container="${{ env.registry }}/${{ env.username }}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1] }}"
+    echo "container=${container}" >> $GITHUB_ENV
 ```
-For example, let's say that you normally have two containers one with the tag `latest` and one with the tag `alpine`. This workflow step will mark them as `v0.2.1-latest` and `v0.2.1-alpine` respectively when you create a new release with the tag with the value `v0.2.1`.
 
 ## Interacting with GitHub Container Registry
 
