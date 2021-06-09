@@ -41,14 +41,14 @@ jobs:
         run: |
           container="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${{ matrix.dockerfile[1] }}"
           echo "container=${container}" >> $GITHUB_ENV
-          echo "container-versioned=${container}" >> $GITHUB_ENV
+          echo "versioned=${container}" >> $GITHUB_ENV
 
         # On a new release create a container with the same tag as the release.
       - name: Set Container Tag Release
         if: github.event_name == 'release'
         run: |
           versioned="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1] }}"
-          echo "container-versioned=${versioned}" >> $GITHUB_ENV
+          echo "versioned=${versioned}" >> $GITHUB_ENV
 
       - name: Build ${{ matrix.dockerfile[1] }}
         run: |
@@ -57,7 +57,7 @@ jobs:
               printf "Dockerfile ${{ matrix.dockerfile[0] }} does not exist"
               exit 1;
           fi
-          docker build -f ${{ matrix.dockerfile[0] }} -t ${{ env.container }} -t ${{ env.container-versioned }} .
+          docker build -f ${{ matrix.dockerfile[0] }} -t ${{ env.container }} -t ${{ env.versioned }} .
           docker images
 
       - name: Log in to GitHub Container Registry
@@ -76,4 +76,4 @@ jobs:
       - name: Deploy ${{ matrix.dockerfile[1] }}
         # And Don't log push the container on a pull request.
         if: github.event_name != 'pull_request'
-        run: docker push ${{ env.container }} --all-tags
+        run: docker push --all-tags
