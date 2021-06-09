@@ -22,14 +22,38 @@ the job, meaning filling in this section:
 # These are for the GitHub Container registry, you can also use
 # Quay.io or another OCI registry
 env:
-  registry: docker.pkg.github.com
+  registry: ghcr.io
   username: autamus
   repository: container-builder-template     
 ```
 
-For example, you might change registry to `quay.io` or similar. This is important
-for naming the containers, and authenticating with the registry to push. You
-will need to make these changes in both `build.yaml` and `deploy.yaml`.
+Later in the workflow we need to authenticate using the same registry name,
+and credentials, usually from the environment:
+
+```yaml
+- name: Log in to GitHub Docker Registry
+  uses: docker/login-action@v1
+  with:
+    registry: ${{ env.registry }}
+    username: ${{ env.username }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The above shows authentication to a GitHub Container Registry.
+But if you want to use another registry like Quay.io or Docker Hub, you'll
+want to provide a username and password, typically as named
+secrets in the environment:
+
+```yaml
+with:
+    registry: ${{ env.registry }}
+    username: ${{ secrets.DOCKERHUB_USERNAME }}
+    password: ${{ secrets.DOCKERHUB_TOKEN }}
+```
+
+The environment section will need to be changed in `build.yaml` and `deploy.yaml`,
+while the login section is only present in `deploy.yaml`.
+
 
 ### 2. Dockerfiles
 
@@ -55,7 +79,7 @@ to ghcr.io)
  - ghcr.io/autamus/container-builder-template:subfolder from subfolder/Dockerfile
 
 
-### 3. Triggers
+### 4. Triggers
 
 By default, adding these files will build containers on a pull request (to test
 changes) and then deploy on any merge into the main branch. You can take a look

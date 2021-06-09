@@ -47,5 +47,9 @@ jobs:
           username: ${{ env.username }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+          # Example variables for a non GitHub registry like Quay or Docker Hub
+          # username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Deploy ${{ matrix.dockerfile[1] }}
         run: docker push ${{ env.container }}
