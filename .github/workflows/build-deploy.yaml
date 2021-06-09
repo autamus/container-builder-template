@@ -27,6 +27,8 @@ jobs:
       repository: container-builder-template     
 
     strategy:
+      # Even if one docker container build fails we want the others to continue.
+      fail-fast: false
       # A matrix of Dockerfile paths and associated tags
       # Dockerfile in root builds to tag latest
       matrix:
