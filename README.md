@@ -4,7 +4,7 @@
 
 This template will show you how to set up automated builds for the
 Dockerfiles in your repository and deploy them to any container registry.
-
+The example here builds to [ghcr.io/autamus/container-builder-template](https://github.com/orgs/autamus/packages/container/package/container-builder-template).
 
 ## Usage
 
@@ -119,4 +119,31 @@ You'll also want to comment out the section that generates these different tags,
 ## Interacting with GitHub Container Registry
 
 Once your containers are deployed, you can [follow this guide](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions) for how
-to authenticate, pull, and otherwise interact with your personal registry.
+to authenticate, pull, and otherwise interact with your personal registry. As
+an example, the template here builds containers that can be pulled and interacted with:
+
+```bash
+$ docker run --rm -it ghcr.io/autamus/container-builder-template:latest
+...
+
+ Cut it out.  
+
+          _________________  .========
+         [_________________>< :======
+                             '======== 
+```
+
+And for the tag:
+
+```bash
+$ docker run --rm -it ghcr.io/autamus/container-builder-template:subfolder spoon
+
+
+ They say I'm rather spoontaneous!  
+
+
+        __________        .-"""-.
+       /          ''''---' .'    \
+       \__________....---. '.    /
+                          '-...-'
+```
