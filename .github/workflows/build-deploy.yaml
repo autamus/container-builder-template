@@ -76,4 +76,4 @@ jobs:
       - name: Deploy ${{ matrix.dockerfile[1] }}
         # And Don't log push the container on a pull request.
         if: github.event_name != 'pull_request'
-        run: docker push ${{ env.container }}
+        run: docker push ${{ env.container }} --all-tags
