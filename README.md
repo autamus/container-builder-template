@@ -87,18 +87,16 @@ you want to choose a different event (e.g., a release).
 
 #### Building on a GitHub Release
 
-Although disabled by default the build-deploy template also supports building containers on a new GitHub release.
-With this trigger shown below. To begin building versions of your container on a release simply uncomment the
-following trigger at the beginning of the workflow.
+The build-deploy template also supports building containers on a new GitHub release with the trigger below.
+If you decide that you'd rather not release versioned containers on a release you can delete or comment out this section.
 ```yaml
   # Let's also trigger a build and publish of your container when 
   # you release a new version.
   release:
     types: [published, created]
 ```
-Now that we're building containers on GitHub releases, we'll need a way to distinguish them.
-The following code segment (which is commented out by default in the workflow) will create special tags for your
-docker containers to match your GitHub release.
+When we're building containers on GitHub releases, we'll need a way to distinguish them.
+The following code segment will create special tags for your docker containers to match your GitHub release.
 ```yaml
         # On a new release create a container with the same tag as the release.
       - name: Set Container Tag Release
