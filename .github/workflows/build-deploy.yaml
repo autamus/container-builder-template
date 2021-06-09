@@ -47,8 +47,8 @@ jobs:
       - name: Set Container Tag Release
         if: github.event_name == 'release'
         run: |
-          container="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1] }}"
-          echo "container-versioned=${container}" >> $GITHUB_ENV
+          container-versioned="${{ env.registry }}/${{ env.username}}/${{ env.repository }}:${GITHUB_REF##*/}-${{ matrix.dockerfile[1] }}"
+          echo "container-versioned=${container-versioned}" >> $GITHUB_ENV
 
       - name: Build ${{ matrix.dockerfile[1] }}
         run: |
