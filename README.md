@@ -100,9 +100,9 @@ If you decide that you'd rather not release versioned containers on a release yo
 
 ```yaml
   # Let's also trigger a build and publish of your container when 
-  # you release a new version.
+  # you release a new version. You can also use "created" instead of published.
   release:
-    types: [published, created]
+    types: [published]
 ```
 
 You'll also want to comment out the section that generates these different tags, shown below.
