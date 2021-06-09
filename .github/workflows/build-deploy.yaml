@@ -9,10 +9,10 @@ on:
     branches:
       - main
       - master
-  # Let's also trigger a build and publish of your container when 
-  # you release a new version.
-  release:
-    types: [published, created]
+  # # Let's also trigger a build and publish of your container when 
+  # # you release a new version.
+  # release:
+  #   types: [published, created]
 
 jobs:
   deploy-images:
