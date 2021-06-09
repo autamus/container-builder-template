@@ -24,7 +24,7 @@ jobs:
     env:
       registry: ghcr.io
       username: autamus
-      repository: builder-template     
+      repository: container-builder-template     
 
     strategy:
       # Even if one docker container build fails we want the others to continue.
